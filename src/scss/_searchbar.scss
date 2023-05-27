@@ -1,0 +1,21 @@
+.searchbar {
+    position: relative;
+
+    &__glass {
+        position: absolute;
+        top: 53%;
+        transform: translateY(-50%);
+        right: vw(10);
+        pointer-events: none;
+    }
+
+    input {
+        width: 100%;
+        height: vw(27);
+        background: $color-grey-darker;
+        border: 1px solid $color-border;
+        border-radius: $size-radius * 0.6;
+        padding: vw(3) vw(6);
+        padding-right: vw(27);
+    }
+}

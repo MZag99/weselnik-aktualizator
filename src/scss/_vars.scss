@@ -1,0 +1,33 @@
+$size-hd: 1600px;
+$size-desktop: 1024px;
+$size-tablet: 768px;
+$size-laptop: 720px;
+$size-phone5: 568px;
+$size-min: 320px;
+
+// PALETTE
+$color-grey-dark: #232323;
+$color-grey-darker: #121212;
+$color-grey: #444;
+$color-grey-light: #aaa;
+$color-grey-mid: #666;
+$color-pale: #ececec;
+$color-black: #000;
+$color-white: #fff;
+$color-red: #ff0000;
+
+// COLOR SETUP
+$color-text: $color-pale;
+$color-bg: $color-grey-dark;
+$color-header: $color-grey;
+$color-login-panel: $color-grey;
+$color-border: rgba($color-pale, 0.3);
+$color-chord: $color-red;
+
+// SIZES
+$header-height: vw(60);
+$footer-height: vw(60);
+$size-radius: vw(10);
+
+// FONTS
+$font-sans: "SF";

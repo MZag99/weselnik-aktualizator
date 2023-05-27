@@ -1,0 +1,38 @@
+.header {
+    position: fixed;
+    background-color: transparent;
+    width: 100%;
+    padding: vw(15) vw(20);
+    height: $header-height;
+
+    &__left {
+        @include flex(row, flex-start, center);
+    }
+
+    &__logo {
+        text-align: left;
+        font-size: vw(18);
+        font-weight: 700;
+        letter-spacing: -0.5px;
+        width: vw(30);
+        height: vw(30);
+        padding: vw(8) vw(3) vw(5);
+        border: 1px solid $color-pale;
+        opacity: 0.5;
+        transition: opacity 0.3s linear;
+        border-radius: vw(3);
+        cursor: pointer;
+        
+        @include breakpoint(not-desktop) {
+            width: vw(30, phone);
+            height: vw(30, phone);
+            border-radius: vw(3, phone);
+            padding: vw(10, phone) vw(3, phone) vw(5, phone);
+            font-size: vw(16, phone);
+        }
+
+        @include hover {
+            opacity: 1;
+        }
+    }
+}

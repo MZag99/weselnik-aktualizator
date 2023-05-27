@@ -1,0 +1,24 @@
+.login-panel {
+    width: vw(300);
+    //background-color: $color-login-panel;
+    border-radius: $size-radius;
+    @include flex(column, flex-start, center);
+    padding: vw(20);
+    border: 1px solid $color-border;
+
+    h2 {
+        font-size: vw(32);
+        line-height: 1;
+        font-weight: 700;
+        margin: 0;
+    }
+
+    p {
+        margin: 0 0 vw(10);
+        color: rgba($color-text, 0.5);
+    }
+    
+    form {
+        @include flex(column, center, center);
+    }
+}

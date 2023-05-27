@@ -1,0 +1,37 @@
+.song-list {
+    @include flex(column, flex-start, stretch);
+    height: 100%;
+    width: 100%;
+
+    h2 {
+
+        margin-bottom: 0;
+
+        span {
+            font-size: vw(14);
+            font-weight: 400;
+            color: $color-border;
+        }
+    }
+
+    &__header {
+        @include flex(row, space-between, center);
+
+        .button {
+            
+        }
+
+        margin-bottom: vw(10);
+    }
+
+    &__list {
+        padding: vw(10);
+        flex: 1;
+        list-style: none;
+        margin-bottom: 0;
+        border: 1px solid $color-border;
+        background: $color-grey-darker;
+        border-radius: $size-radius;
+        overflow: auto;
+    }
+}

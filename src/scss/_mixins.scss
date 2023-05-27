@@ -1,0 +1,85 @@
+@use "sass:math";
+
+@function strip-units($value) {
+    @return math.div($value, ($value * 0 + 1));
+}
+
+$browser-context: 16px;
+$line-height: 1.4;
+
+@mixin font-size($size: $browser-context, $line: $line-height) {
+    font-size: strip-units($size) + px;
+    font-size: math.div(strip-units($size), strip-units($browser-context)) + rem;
+
+    @if (strip-units($line) < 4) {
+        line-height: strip-units($line);
+    } @else {
+        line-height: math.div(strip-units($line), strip-units($size));
+    }
+}
+
+@function z($list, $element) {
+    $z-index: index($list, $element);
+
+    @if $z-index {
+        @return $z-index;
+    }
+
+    @warn 'There is no item "#{$element}" in this list; choose one of: #{$list}';
+    @return null;
+}
+
+@mixin z-index($element, $list: $elements) {
+    z-index: z($list, $element);
+}
+
+@mixin flex($direction: row, $justify: center, $align: center) {
+    display: flex;
+    flex-direction: $direction;
+    justify-content: $justify;
+    align-items: $align;
+}
+
+@function vw($size, $bp: desktop, $max: true) {
+    $layouts: (
+        desktop: 1280,
+        tablet: 768,
+        phone: 375
+    );
+    @if map-has-key($layouts, $bp) {
+        @return math.div(strip-units($size), map-get($layouts, $bp)) * 100vw;
+    } @else {
+        @warn "Unfortunately, no value could be retrieved from `#{$bp}`.";
+    }
+}
+
+@function vh($size, $bp: desktop) {
+    $layouts: (
+        desktop: 1000,
+        tablet: 1024,
+        phone: 667,
+    );
+
+    @if map-has-key($layouts, $bp) {
+        @return strip-units($size) / map-get($layouts, $bp) * 100vh;
+    } @else {
+        @warn "Unfortunately, no value could be retrieved from `#{$bp}`.";
+    }
+}
+
+@mixin hover {
+    @media (hover: hover) and (pointer: fine) {
+        &:hover,
+        .accessibility &:focus {
+            @content;
+        }
+    }
+}
+
+@mixin full() {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}

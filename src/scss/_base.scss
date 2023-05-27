@@ -1,0 +1,58 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background-color: $color-bg;
+  font-size: vw(10);
+  @include font-family(sans);
+  color: $color-text;
+  overflow: hidden;
+}
+
+article {
+  height: calc(100vh - $footer-height);
+
+  *::-webkit-scrollbar {
+    width: vw(5);
+    border-radius: 10px;
+  }
+
+  *::-webkit-scrollbar-thumb {
+    background-color: $color-grey-light;
+  }
+}
+
+footer {
+  @include flex();
+
+  text-align: center;
+  color: $color-border;
+  height: $footer-height;
+
+  @include breakpoint(not-desktop) {
+    font-size: vw(12, phone);
+    position: relative;
+    top: vw(-15, phone);
+  }
+}
+
+
+input {
+  color: $color-text;
+  font-size: vw(12) !important;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.mobile-disclaimer {
+  position: absolute;
+  top: 47%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: vw(30, phone);
+}

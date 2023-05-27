@@ -1,0 +1,79 @@
+.preview {
+    @include flex(column, flex-start, flex-end);
+    height: 100%;
+    background: $color-grey-darker;
+    border: 1px solid $color-border;
+    border-radius: $size-radius;
+
+    &__content {
+        width: 100%;
+        height: 90%;
+        padding: vw(30) vw(15) vw(15);
+        padding-bottom: 0;
+        flex: 5;
+        width: vw(300);
+        color: $color-text;
+    }
+    
+    &__phone{
+        width: 100%;
+        height: 100%;
+        overflow-wrap: break-word;
+        white-space: pre-wrap;
+        padding: vw(10);
+        border: 1px solid $color-border;
+        border-radius: $size-radius;
+        background: $color-black;
+        overflow: auto;
+        margin-bottom: 0;
+
+        h3 {
+            font-size: vw(22);
+            margin: vw(10) 0;
+        }
+    }
+
+    &__text {
+        height: 78%;
+        overflow: auto;
+        overflow-x: hidden;
+
+        p {
+            color: $color-grey-light;
+            font-size: vw(13);
+            line-height: vw(30);
+        }
+    }
+
+    &__name {
+        font-size: vw(12);
+    }
+
+    &__author {
+        font-size: vw(9);
+        color: $color-grey-light;
+    }
+
+    &__session-data {
+        margin-bottom: vw(10);
+    }
+
+    &__decor {
+        position: relative;
+        width: 100%;
+        flex: 0.6;
+
+        &:before {
+            content: '';
+            display: block;
+            position: absolute;
+            top: 49%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: vw(40);
+            height: vw(40);
+            border-radius: 50%;
+            border: 1px solid $color-border;
+        }
+    }
+}

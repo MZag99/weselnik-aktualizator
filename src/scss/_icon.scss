@@ -1,0 +1,17 @@
+.icon {
+    width: auto;
+    height: vw(14);
+    cursor: pointer;
+    
+    filter: invert(0.35);
+    transition: filter 0.3s ease-out;
+
+    @include hover {
+        filter: invert(1);
+    }
+
+    img {
+        height: 100%;
+        width: auto;
+    }
+}

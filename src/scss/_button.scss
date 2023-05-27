@@ -1,0 +1,20 @@
+.button {
+    background-color: $color-grey-light;
+    border: none;
+    padding: vw(5) vw(10);
+    border-radius: vw(5);
+    text-transform: capitalize;
+    font-size: vw(10);
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.05s linear;
+
+    &--locked {
+        pointer-events: none;
+        opacity: 0.3;
+    }
+
+    @include hover {
+        background-color: $color-grey;
+    }
+}

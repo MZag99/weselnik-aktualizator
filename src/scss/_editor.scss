@@ -1,0 +1,88 @@
+.editor {
+    @include flex(column, flex-start, flex-start);
+    position: relative;
+    height: 100%;
+
+    &__content {
+        position: relative;
+        width: 100%;
+        flex: 1;
+        background-color: $color-grey-darker;
+        margin: 0 !important;
+        overflow: auto;
+        font-size: vw(14);
+        line-height: 2.5;
+        border: 1px solid $color-border;
+        border-radius: $size-radius;
+        // overflow-wrap: break-word;
+        
+        .editor__mask, textarea {
+            position: absolute;
+            border: none;
+            background-color: transparent;
+            color: rgba($color-pale, 0.3);
+            width: 100%;
+            min-height: 100%;
+            resize: none;
+            font-size: vw(12);
+            line-height: 2.5;
+            padding: vw(5) vw(10) 0;
+            @include font-family(sans);
+        }
+        
+        textarea {
+            // top: 20px;
+            //white-space: nowrap;
+            outline: none;
+            color: $color-text;
+        }
+    }
+
+    &__instrumental {
+        color: red;
+    }
+
+    &__chord {
+        font-size: vw(10);
+        display: inline-block;
+        position: absolute;
+        top: vw(-17);
+        left: 0;
+        color: red;
+        font-weight: 700;
+
+        &-wrap {
+            position: relative;
+        }
+    }
+
+    &__header {
+        h2 {
+            margin-bottom: 0;
+        }
+
+        margin-bottom: vw(10);
+        width: 100%;
+        @include flex(row, space-between, center);
+
+        div {
+            @include flex(row, flex-start, flex-start);
+            gap: vw(10);
+        }
+    }
+
+
+    p {
+        margin: 0;
+    }
+
+    &__no-text {
+        font-size: vw(12);
+        position: absolute;
+        top: 48%;
+        left: 50%;
+        transform: translateX(-50%);
+        margin: 0;
+        color: $color-border;
+    }
+}

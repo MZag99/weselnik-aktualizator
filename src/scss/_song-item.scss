@@ -1,0 +1,32 @@
+.song-item {
+    position: relative;
+    margin-bottom: vw(5);
+    font-size: vw(12);
+    color: $color-border;
+    cursor: pointer;
+    transition: color 0.1s linear;
+    
+    @include hover {
+        color: $color-text;
+        
+        span {
+            transition: opacity 0.1s linear;
+            opacity: 1;
+        }
+    }
+    
+    &.is-active {
+        color: $color-text;
+    }
+
+    span {
+        position: absolute;
+        right: 0;
+        display: inline-block;
+        opacity: 0;
+
+        .icon {
+            height: vw(11);
+        }
+    }
+}

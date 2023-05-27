@@ -1,0 +1,39 @@
+.main-panel {
+    @include flex(row, center, center);
+    margin-top: vw(30);
+    gap: vw(40);
+    height: 75vh;
+    width: vw(1050);
+    flex-wrap: wrap;
+
+    &__element {
+        height: 100%;
+        border: 1px solid $color-border;
+        border-radius: $size-radius;
+        padding: vw(15);
+
+        h2 {
+            font-size: vw(22);
+            margin: 0;
+            margin-bottom: vw(10);
+        }
+    }
+
+    &__songs {
+        flex: 2.2;
+    }
+
+    &__editor {
+        flex: 4;
+
+        h2 {
+            color: $color-pale;
+        }
+    }
+
+    &__preview {
+        padding: 0;
+        flex: 2.5;
+        border: none;
+    }
+}

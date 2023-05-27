@@ -1,0 +1,273 @@
+/* import React, { ChangeEvent, LegacyRef, ReactNode, useEffect, useRef } from 'react';
+
+import reactStringReplace from 'react-string-replace';
+import { v4 as uuidv4 } from 'uuid';
+
+import { getChord, getReplacement, isChordReduntant, removeAt, replaceAt } from './Editor.utils';
+
+import { EditorTypes } from './Editor.types';
+
+
+const Editor = ({ content, setPreviewContent, currentSong }: EditorTypes.IProps) => {
+
+    const contentRef = useRef<string>('');
+    const textAreaRef = useRef<HTMLTextAreaElement>();
+    const chords = useRef<EditorTypes.IChordObj[]>([]);
+    const currentChord = useRef<EditorTypes.IChordObj>({
+        posStart: 0,
+        posEnd: 0,
+        content: ''
+    });
+
+    const selected = useRef<EditorTypes.ISelectedObj>({
+        selectedText: '',
+        start: 0,
+        end: 0
+    });
+
+    enum INPUT_TYPES {
+        NEW_LINE = 'insertLineBreak',
+        REMOVE = 'deleteContentBackward',
+        PASTE = 'insertFromPaste',
+        INSERT_TEXT = 'insertText'
+    }
+
+
+
+    const onChange = async (e: ChangeEvent) => {
+        const target = (e.target as HTMLInputElement);
+        const nativeEvent = (e.nativeEvent as InputEvent);
+        const sel = selected.current;
+
+        const { data } = nativeEvent;
+        let { inputType } = nativeEvent;
+
+        if (!data && inputType === INPUT_TYPES.INSERT_TEXT) inputType = 'insertLineBreak'; // wtf
+
+        const chord = getChord(target.selectionEnd || 0, chords.current);
+
+        console.log(sel.start, chord);
+
+        if (chord) {
+            // Inside chord adding
+            if (data || inputType === INPUT_TYPES.NEW_LINE) {
+                console.log('inside chord adding!');
+
+                const insert = data ?? '%';
+                
+                setPreviewContent(replaceAt(content, sel.start, insert));
+            }
+            
+            // Inside chord removing
+            if (inputType === INPUT_TYPES.REMOVE) {
+                console.log('inside chord removing!');
+                const pattern = /\[\[(.*?\]\])/;
+                
+                if (content.match(pattern)) {
+                    
+                    chords.current = chords.current.filter(el => el !== chord);
+                    
+                    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                    const toRemoveLength = content.match(pattern)![0].length;
+                    const removeData = {
+                        start: sel.end - toRemoveLength,
+                        end: sel.end - 1
+                    };
+
+                    target.value = removeAt(target.value, removeData.start, removeData.end);
+                    setPreviewContent(removeAt(content, removeData.start, removeData.end + 1));
+
+                    sel.start = removeData.start;
+                    target.selectionEnd = sel.start;
+                }
+            }
+        } else {
+            // Out of chord actions:
+            // Pasting copied text
+            if (inputType === INPUT_TYPES.PASTE) {
+                console.log('out of chord pasting!');
+                
+                await navigator.clipboard.readText().then(text => {
+                    setPreviewContent(replaceAt(content, sel.start, text));
+                });
+                return;
+            }
+
+            // Inserting text / new line into content
+            if (data || inputType === INPUT_TYPES.NEW_LINE) {
+                console.log('out of chord adding!');
+                const insert = data ?? '%';
+
+                // If it's directly after chord and it's a '%' - prevent from typing
+                const chord = getChord(sel.start - 1, chords.current);
+                if (inputType === INPUT_TYPES.NEW_LINE && chord) {
+                    e.preventDefault();
+                    return;
+                }
+                
+                setPreviewContent(replaceAt(content, sel.start, insert));
+            }
+            
+            // Removing
+            if (inputType === INPUT_TYPES.REMOVE) {
+                console.log('out of chord removing!');
+                const isSelected = sel.selectedText.length > 0;
+
+                if (isSelected) {
+                    const trash: EditorTypes.IChordObj[] = [];
+
+                    for (let i = sel.start; i < sel.end; i++) {
+                        const chord = getChord(i, chords.current);
+
+                        chord && trash.push(chord);
+                    }
+                    chords.current = chords.current.filter(el => !trash.includes(el));
+                    setPreviewContent((content: string) => content = removeAt(content, sel.start, sel.end));
+
+                } else {
+                    setPreviewContent((content: string) => content = removeAt(content, sel.end - 1, sel.end));
+                }
+
+                selected.current && (selected.current.selectedText = '');
+            }
+        }
+    };
+
+
+
+    const onSelect = (e: Event) => {
+        const target = e.target as HTMLInputElement;
+        const { selectionStart, selectionEnd } = target;
+
+        const isForward = selectionStart && selectionStart > selected.current.start; 
+
+        selected.current && (selected.current.start = selectionStart ?? 0, selected.current.end = selectionEnd ?? target.value.length);
+        selected.current && (selected.current.selectedText = target.value.substring(selectionStart ?? 0, selectionEnd ?? 0));
+
+        const chord = getChord(selected.current.start, chords.current);
+        
+        if (chord) {
+            const diff = isForward ? selected.current.start - chord.posEnd - 1 : selected.current.start - chord.posStart + 1; 
+            console.log(`STARTING POSITION: ${selectionStart}\nIS FORWARD: ${isForward}\nSHIFTING BY ${diff}\nCHORD: `, chord);           
+            shiftSelection(diff);
+        }
+
+        console.log(content[selected.current.start]);
+        console.log(target.value[selected.current.start]);
+    };
+
+
+
+    const shiftSelection = (amount: number) => {
+        if (!textAreaRef.current) return null;
+        textAreaRef.current.selectionStart -= amount;
+        textAreaRef.current.selectionEnd = textAreaRef.current?.selectionStart;
+    };
+
+
+
+    const scanChords = () => {
+
+        chords.current = [];
+
+        for (let i = 0; i < content.length; i++) {
+
+            const isChordStart = content[i] === '[' && content[i - 1] !== '[';
+            const isChordEnd = content[i] === ']' && content[i - 1] === ']';
+
+            isChordStart && (currentChord.current.posStart = i);
+            isChordEnd && createChord(i);
+        }
+    };
+
+
+
+    const adjustInput = (el: HTMLTextAreaElement | HTMLInputElement) => {
+        const patternChords = /\[\[(.*?\]\])/g;
+        const patternNewLine = /%/g;
+
+        const mask = el.previousSibling as HTMLElement;
+        const match = el.value.match(patternChords);
+
+        el.style.height = `${mask.clientHeight}px`;
+        el.value = el.value.replace(patternChords, getReplacement(match && match[0].length)).replace(patternNewLine, '\n').replace(/  +/g, ' ');
+    };
+
+
+
+    const createChord = (index: number): void => {
+        currentChord.current.posEnd = index;
+        currentChord.current.content = content.slice(currentChord.current.posStart + 2, currentChord.current.posEnd - 1);
+
+        const newChord = JSON.parse(JSON.stringify(currentChord.current));
+
+        !isChordReduntant(newChord, chords.current) && chords.current.push(newChord);
+    };
+
+
+
+    const onKeyUp = (e: Event) => {
+        const target = e.target as HTMLInputElement;
+        target.value = target.value.replace('. ', ' ');
+        setPreviewContent((content: string) => content.replace(/\.\s/g, ''));
+    };
+
+
+
+    const getFormattedText = (text: string): ReactNode => {
+        const pattern = /\[\[(.*?\]\][^])/;
+
+        const result = reactStringReplace(text, pattern, (match, i) => {
+            const content = match.replace('[[', '').split(']]');
+            const chord = content[0];
+            const text = content[1];
+
+            return <span key={i} className='editor__chord-wrap'><span className='editor__chord'>{chord}</span><span className='editor__plain-text'>{text}</span></span>;
+        });
+
+        result.forEach((el, i) => {
+            const nLPattern = '%';
+
+            if (typeof (el) === 'string') {
+                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                // @ts-expect-error
+                result[i] = reactStringReplace(el, nLPattern, () => {
+                    return <br key={uuidv4()} />;
+                });
+            }
+        });
+
+        return <span className='editor__plain-text js-plain-text'>{result}</span>;
+    };
+
+
+
+    useEffect(() => {
+        contentRef.current = content;
+
+        if (textAreaRef.current !== document.activeElement) {
+            textAreaRef.current && (textAreaRef.current.value = content);
+        }
+
+        textAreaRef.current && adjustInput(textAreaRef.current);
+
+        scanChords();
+    }, [content]);
+
+
+
+    return (
+        <div className='editor'>
+            <h2>Edytor</h2>
+            <div className='editor__content'>
+                <p className='editor__mask'>
+                    {getFormattedText(content)}
+                </p>
+                <textarea ref={textAreaRef as LegacyRef<HTMLTextAreaElement>} spellCheck={false} placeholder='Tutaj wprowadź tekst utworu...' onChange={onChange} onSelect={onSelect} onKeyUp={onKeyUp} />
+            </div>
+        </div>
+    );
+};
+
+export default Editor;
+*/
